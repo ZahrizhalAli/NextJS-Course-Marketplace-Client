@@ -5,6 +5,7 @@ import CourseCreateForm from "../../../../components/forms/CourseCreateForm";
 import Resizer from "react-image-file-resizer";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { List, Avatar } from "antd";
 
 const CourseEdit = () => {
   const [values, setValues] = useState({
@@ -16,6 +17,7 @@ const CourseEdit = () => {
     category: "",
     loading: false,
     imagePreview: "",
+    lessons: [],
   });
   const [image, setImage] = useState({});
   const [preview, setPreviews] = useState("");
@@ -96,23 +98,59 @@ const CourseEdit = () => {
     }
   };
 
+  const handleDrag = async (e) => {
+    console.log("  ON  DRAG=> " , e);
+  };
+
+  const handleDrop = async (e) => {
+    console.log(e);
+  };
   return (
     <>
       <InstructorRoute>
-        <h1 className="jumbotron text-center square p-5">Update Course</h1>{" "}
-        <div className="pt-3 pb-3">
-          <CourseCreateForm
-            handleSubmit={handleSubmit}
-            handleChange={handleChange}
-            handleImage={handleImage}
-            handleImageRemove={handleImageRemove}
-            values={values}
-            setValues={setValues}
-            preview={preview}
-            uploadButtonText={uploadButtonText}
-            editPage={true}
-          />
-        </div>
+        {values && (
+          <>
+            <h1 className="jumbotron text-center square p-5">Update Course</h1>{" "}
+            <div className="pt-3 pb-3">
+              <CourseCreateForm
+                handleSubmit={handleSubmit}
+                handleChange={handleChange}
+                handleImage={handleImage}
+                handleImageRemove={handleImageRemove}
+                values={values}
+                setValues={setValues}
+                preview={preview}
+                uploadButtonText={uploadButtonText}
+                editPage={true}
+              />
+            </div>
+            <hr />
+            <div className="row pt-5 ">
+              <div className="col lesson-list">
+                <h4>
+                  {values && values.lessons && values.lessons.length} lessons
+                </h4>
+                <List
+                  onDragOver={(e) => e.preventDefault()}
+                  itemLayout="horizontal"
+                  dataSource={values && values.lessons}
+                  renderItem={(item, index) => (
+                    <List.Item
+                      draggable
+                      onDragStart={(e) => handleDrag(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                    >
+                      <List.Item.Meta
+                        avatar={<Avatar>{index + 1}</Avatar>}
+                        title={item.title}
+                      ></List.Item.Meta>
+                    </List.Item>
+                  )}
+                ></List>
+              </div>
+            </div>
+          </>
+        )}
       </InstructorRoute>
     </>
   );
