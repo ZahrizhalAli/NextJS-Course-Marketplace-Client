@@ -98,12 +98,27 @@ const CourseEdit = () => {
     }
   };
 
-  const handleDrag = async (e) => {
-    console.log("  ON  DRAG=> " , e);
+  const handleDrag = async (e, index) => {
+    e.dataTransfer.setData("itemIndex", index);
   };
 
-  const handleDrop = async (e) => {
-    console.log(e);
+  const handleDrop = async (e, index) => {
+    const movingItemIndex = e.dataTransfer.getData("itemIndex");
+    const targetItemIndex = index;
+
+    let allLessons = values.lessons;
+
+    let movingItem = allLessons[movingItemIndex]; //
+    allLessons.splice(movingItemIndex, 1); // remove 1 item from the given index
+
+    allLessons.splice(targetItemIndex, 0, movingItem);
+
+    setValues({ ...values, lessons: [...allLessons] });
+
+    const { data } = await axios.put(`/api/course/${slug}`, {
+      ...values,
+      image,
+    });
   };
   return (
     <>
